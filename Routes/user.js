@@ -14,17 +14,17 @@ router.post("/users", async (req, res) => {
   }
 });
 
-//read users
+//get all users using .find() method
 router.get("/users", async (req, res) => {
   try {
     const users = await User.find({});
-    users.status(200).send(users);
+    res.status(200).send(users);
   } catch (error) {
     res.status(400).send(error);
   }
 });
 
-//get user ID
+//get specfic user by using ID
 router.get("/users/:id", async (req, res) => {
   const _id = req.params.id;
 
@@ -61,11 +61,12 @@ router.patch("/users/:id", async (req, res) => {
 router.delete("/users/:id", async (req, res) => {
   const _id = req.params.id;
   try {
-    const deleteUser = await User.findByIdAndDelete(_id);
-    if (!deleteUser) {
+    const deletedUser = await User.findByIdAndDelete(_id);
+
+    if (!deletedUser) {
       return res.status(404).send();
     }
-    res.status(200).send(deleteUser);
+    res.status(200).send(deletedUser);
   } catch (error) {
     res.status(404).send(error);
   }
