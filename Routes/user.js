@@ -2,6 +2,19 @@ const express = require("express");
 const router = express.Router();
 const User = require("../Models/user");
 
+// create user login
+router.post("/users/login", async (req, res) => {
+  try {
+    const user = await User.findByCredentials(
+      req.body.email,
+      req.body.password
+    );
+    res.send(user);
+  } catch (error) {
+    res.status(401).send();
+  }
+});
+
 //create users
 router.post("/users", async (req, res) => {
   const user = new User(req.body);
