@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const User = require("../Models/user");
+const auth = require("../Middleware/auth");
 
 // create user login
 router.post("/users/login", async (req, res) => {
@@ -12,14 +13,14 @@ router.post("/users/login", async (req, res) => {
 
     const token = await user.generateAuthToken();
 
-    res.send(user, token);
+    res.send({ user, token });
   } catch (error) {
     res.status(401).send();
   }
 });
 
 //create users
-router.post("/users", async (req, res) => {
+router.post("/users", auth, async (req, res) => {
   const user = new User(req.body);
 
   try {
@@ -31,7 +32,7 @@ router.post("/users", async (req, res) => {
 });
 
 //get all users using .find() method
-router.get("/users", async (req, res) => {
+router.get("/users", auth, async (req, res) => {
   try {
     const users = await User.find({});
     res.status(200).send(users);
@@ -41,8 +42,9 @@ router.get("/users", async (req, res) => {
 });
 
 //get specfic user by using ID
-router.get("/users/:id", async (req, res) => {
-  const _id = req.params.id;
+router.get("/users/me", auth, async (req, res) => {
+  //const _id = req.params.id;
+  const _id = req.user._id;
 
   try {
     const user = await User.findById(_id);
@@ -57,8 +59,8 @@ router.get("/users/:id", async (req, res) => {
 });
 
 //update user
-router.patch("/users/:id", async (req, res) => {
-  const _id = req.params.id;
+router.patch("/users/me", auth, async (req, res) => {
+  const _id = req.user._id;
 
   try {
     const updatedUser = await User.findByIdAndUpdate(_id, req.body, {
@@ -74,8 +76,8 @@ router.patch("/users/:id", async (req, res) => {
 });
 
 //delete user
-router.delete("/users/:id", async (req, res) => {
-  const _id = req.params.id;
+router.delete("/users/me", auth, async (req, res) => {
+  const _id = req.user._id;
   try {
     const deletedUser = await User.findByIdAndDelete(_id);
 
