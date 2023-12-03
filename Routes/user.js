@@ -74,10 +74,8 @@ router.get("/users/me", auth, async (req, res) => {
 
 //update user
 router.patch("/users/me", auth, async (req, res) => {
-  const _id = req.user._id;
-
   try {
-    const updatedUser = await User.findByIdAndUpdate(_id, req.body, {
+    const updatedUser = await User.findByIdAndUpdate(req.user._id, req.body, {
       new: true,
     });
     if (!updatedUser) {
@@ -91,16 +89,15 @@ router.patch("/users/me", auth, async (req, res) => {
 
 //delete user
 router.delete("/users/me", auth, async (req, res) => {
-  const _id = req.user._id;
   try {
-    const deletedUser = await User.findByIdAndDelete(_id);
+    const deletedUser = await User.findByIdAndDelete(req.user._id);
 
     if (!deletedUser) {
       return res.status(404).send();
     }
     res.status(200).send(deletedUser);
   } catch (error) {
-    res.status(404).send(error);
+    res.status(400).send(error);
   }
 });
 
